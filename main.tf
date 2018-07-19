@@ -55,49 +55,49 @@ resource "aws_security_group" "minikube" {
 # IAM role
 #####
 
-data "template_file" "policy_json" {
-  template = "${file("${path.module}/template/policy.json.tpl")}"
+# data "template_file" "policy_json" {
+#   template = "${file("${path.module}/template/policy.json.tpl")}"
 
-  vars {}
-}
+#   vars {}
+# }
 
-resource "aws_iam_policy" "minikube_policy" {
-  name        = "${var.cluster_name}"
-  path        = "/"
-  description = "Policy for role ${var.cluster_name}"
-  policy      = "${data.template_file.policy_json.rendered}"
-}
+# resource "aws_iam_policy" "minikube_policy" {
+#   name        = "${var.cluster_name}"
+#   path        = "/"
+#   description = "Policy for role ${var.cluster_name}"
+#   policy      = "${data.template_file.policy_json.rendered}"
+# }
 
-resource "aws_iam_role" "minikube_role" {
-  name = "${var.cluster_name}"
+# resource "aws_iam_role" "minikube_role" {
+#   name = "${var.cluster_name}"
 
-  assume_role_policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Action": "sts:AssumeRole",
-      "Principal": {
-        "Service": "ec2.amazonaws.com"
-      },
-      "Effect": "Allow",
-      "Sid": ""
-    }
-  ]
-}
-EOF
-}
+#   assume_role_policy = <<EOF
+# {
+#   "Version": "2012-10-17",
+#   "Statement": [
+#     {
+#       "Action": "sts:AssumeRole",
+#       "Principal": {
+#         "Service": "ec2.amazonaws.com"
+#       },
+#       "Effect": "Allow",
+#       "Sid": ""
+#     }
+#   ]
+# }
+# EOF
+# }
 
-resource "aws_iam_policy_attachment" "minikube-attach" {
-  name       = "minikube-attachment"
-  roles      = ["${aws_iam_role.minikube_role.name}"]
-  policy_arn = "${aws_iam_policy.minikube_policy.arn}"
-}
+# resource "aws_iam_policy_attachment" "minikube-attach" {
+#   name       = "minikube-attachment"
+#   roles      = ["${aws_iam_role.minikube_role.name}"]
+#   policy_arn = "${aws_iam_policy.minikube_policy.arn}"
+# }
 
-resource "aws_iam_instance_profile" "minikube_profile" {
-  name = "${var.cluster_name}"
-  role = "${aws_iam_role.minikube_role.name}"
-}
+# resource "aws_iam_instance_profile" "minikube_profile" {
+#   name = "${var.cluster_name}"
+#   role = "${aws_iam_role.minikube_role.name}"
+# }
 
 ##########
 # Bootstraping scripts
