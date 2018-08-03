@@ -2,7 +2,8 @@
 
 # to install do the following:
 # KUBEADM_TOKEN=$(kubeadm token generate)
-# ssh $machine_ip /bin/bash =c "export kubeadm_token=$KUBEADM_TOKEN; curl -O /tmp/init-aws-minikube.sh https://raw.githubusercontent.com/bnouvelbmll/terraform-aws-minikube/bmll/scripts/init-aws-minikube.sh && sudo /tmp/init-aws-minikube.sh && rm -f /tmp/init-aws-minikube.sh"
+# machine_ip=172.16.50.19
+# ssh $machine_ip /bin/bash =c "export kubeadm_token=$KUBEADM_TOKEN; wget -O /tmp/init-aws-minikube.sh https://raw.githubusercontent.com/bnouvelbmll/terraform-aws-minikube/bmll/scripts/init-aws-minikube.sh && sudo /bin/bash /tmp/init-aws-minikube.sh && rm -f /tmp/init-aws-minikube.sh"
 
 
 set -o verbose
@@ -10,7 +11,7 @@ set -o errexit
 set -o pipefail
 
 export KUBEADM_TOKEN=${kubeadm_token}
-export IP_ADDRESS="$(curl -s http://169.254.169.254/latest/meta-data/local-ipv4)""
+export IP_ADDRESS="$(curl -s http://169.254.169.254/latest/meta-data/local-ipv4)"
 export CLUSTER_NAME="bmll-compliance"
 export DNS_NAME="compliance-minikube.bmll-privatenetwork"
 export ADDONS=$(
