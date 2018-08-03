@@ -64,8 +64,8 @@ sudo yum install -y kubelet-$KUBERNETES_VERSION kubeadm-$KUBERNETES_VERSION kube
 
 # Fix kubelet configuration
 sed -i 's/--cgroup-driver=systemd/--cgroup-driver=cgroupfs/g' /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
-sed -i '/Environment="KUBELET_CGROUP_ARGS/i Environment="KUBELET_CLOUD_ARGS=--cloud-provider=aws"' /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
-sed -i 's/$KUBELET_CGROUP_ARGS/$KUBELET_CLOUD_ARGS $KUBELET_CGROUP_ARGS/g' /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+# sed -i '/Environment="KUBELET_CGROUP_ARGS/i Environment="KUBELET_CLOUD_ARGS=--cloud-provider=aws"' /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+# sed -i 's/$KUBELET_CGROUP_ARGS/$KUBELET_CLOUD_ARGS $KUBELET_CGROUP_ARGS/g' /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
 
 # Start services
 systemctl enable docker
@@ -85,7 +85,7 @@ kind: MasterConfiguration
 nodeName: $FULL_HOSTNAME
 token: $KUBEADM_TOKEN
 tokenTTL: "0"
-cloudProvider: aws
+# cloudProvider: aws
 kubernetesVersion: v$KUBERNETES_VERSION
 apiServerCertSANs:
 - $DNS_NAME
