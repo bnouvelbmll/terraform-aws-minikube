@@ -1,15 +1,27 @@
 #!/bin/bash
 
+# to install do the following:
+# KUBEADM_TOKEN=$(kubeadm token generate)
+# ssh $machine_ip /bin/bash =c "export kubeadm_token=$KUBEADM_TOKEN; curl -O /tmp/init-aws-minikube.sh https://raw.githubusercontent.com/bnouvelbmll/terraform-aws-minikube/bmll/scripts/init-aws-minikube.sh && sudo /tmp/init-aws-minikube.sh && rm -f /tmp/init-aws-minikube.sh"
+
+
 set -o verbose
 set -o errexit
 set -o pipefail
 
 export KUBEADM_TOKEN=${kubeadm_token}
-export DNS_NAME=${dns_name}
-export IP_ADDRESS=${ip_address}
-export CLUSTER_NAME=${cluster_name}
-export ADDONS="${addons}"
-export KUBERNETES_VERSION="1.10.5"
+export IP_ADDRESS="$(curl -s http://169.254.169.254/latest/meta-data/local-ipv4)""
+export CLUSTER_NAME="bmll-compliance"
+export DNS_NAME="compliance-minikube.bmll-privatenetwork"
+export ADDONS=$(
+cat << EOF
+https://raw.githubusercontent.com/scholzj/terraform-aws-minikube/master/addons/storage-class.yaml
+https://raw.githubusercontent.com/scholzj/terraform-aws-minikube/master/addons/heapster.yaml
+https://raw.githubusercontent.com/scholzj/terraform-aws-minikube/master/addons/dashboard.yaml
+EOF
+)
+
+export KUBERNETES_VERSION="1.10.6"
 
 # Set this only after setting the defaults
 set -o nounset
@@ -83,7 +95,11 @@ rm /tmp/kubeadm.yaml
 # Use the local kubectl config for further kubectl operations
 export KUBECONFIG=/etc/kubernetes/admin.conf
 
+
+
+
 # Install calico
+wget -O /tmp/calico.yaml -nd https://raw.githubusercontent.com/bnouvelbmll/terraform-aws-minikube/bmll/scripts/calico.yaml
 kubectl apply -f /tmp/calico.yaml
 
 # Allow all apps to run on master
@@ -101,8 +117,8 @@ kubeadm alpha phase kubeconfig user \
   --client-name admin \
   --apiserver-advertise-address $DNS_NAME \
   > $KUBECONFIG_OUTPUT
-chown centos:centos $KUBECONFIG_OUTPUT
-chmod 0600 $KUBECONFIG_OUTPUT
+chown $USER:sysadmin $KUBECONFIG_OUTPUT
+chmod 0640 $KUBECONFIG_OUTPUT
 
 # Prepare the kubectl config file for download to client (IP address)
 export KUBECONFIG_OUTPUT=/home/centos/kubeconfig_ip
@@ -110,8 +126,8 @@ kubeadm alpha phase kubeconfig user \
   --client-name admin \
   --apiserver-advertise-address $IP_ADDRESS \
   > $KUBECONFIG_OUTPUT
-chown centos:centos $KUBECONFIG_OUTPUT
-chmod 0600 $KUBECONFIG_OUTPUT
+chown $USER:sysadmin $KUBECONFIG_OUTPUT
+chmod 0640 $KUBECONFIG_OUTPUT
 
 # Load addons
 for ADDON in $ADDONS
