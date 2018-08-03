@@ -116,7 +116,7 @@ kubectl label nodes --all node-role.kubernetes.io/master-
 kubectl create clusterrolebinding admin-cluster-binding --clusterrole=cluster-admin --user=admin
 
 # Prepare the kubectl config file for download to client (DNS)
-export KUBECONFIG_OUTPUT=/home/centos/kubeconfig
+export KUBECONFIG_OUTPUT=~/kubeconfig
 kubeadm alpha phase kubeconfig user \
   --client-name admin \
   --apiserver-advertise-address $DNS_NAME \
@@ -125,7 +125,7 @@ chown $USER:sysadmin $KUBECONFIG_OUTPUT
 chmod 0640 $KUBECONFIG_OUTPUT
 
 # Prepare the kubectl config file for download to client (IP address)
-export KUBECONFIG_OUTPUT=/home/centos/kubeconfig_ip
+export KUBECONFIG_OUTPUT=~/kubeconfig_ip
 kubeadm alpha phase kubeconfig user \
   --client-name admin \
   --apiserver-advertise-address $IP_ADDRESS \
