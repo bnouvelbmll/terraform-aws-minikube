@@ -36,7 +36,7 @@ DNS_NAME=$(echo "$DNS_NAME" | tr 'A-Z' 'a-z')
 # Install docker
 sudo yum install -y yum-utils curl gettext device-mapper-persistent-data lvm2
 # yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-sudo yum makecache fast
+sudo yum makecache fast -y
 sudo yum install -y docker
 
 # Install Kubernetes components
