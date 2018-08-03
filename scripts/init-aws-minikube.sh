@@ -34,10 +34,10 @@ FULL_HOSTNAME="$(curl -s http://169.254.169.254/latest/meta-data/hostname)"
 DNS_NAME=$(echo "$DNS_NAME" | tr 'A-Z' 'a-z')
 
 # Install docker
-yum install -y yum-utils curl gettext device-mapper-persistent-data lvm2
+sudo yum install -y yum-utils curl gettext device-mapper-persistent-data lvm2
 # yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-yum makecache fast
-yum install -y docker
+sudo yum makecache fast
+sudo yum install -y docker
 
 # Install Kubernetes components
 sudo cat <<EOF > /etc/yum.repos.d/kubernetes.repo
@@ -51,13 +51,16 @@ gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg
         https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
 EOF
 
+sudo yum makecache -y --nogpgcheck
+
+
 # setenforce returns non zero if already SE Linux is already disabled
 is_enforced=$(getenforce)
 if [[ $is_enforced != "Disabled" ]]; then
   setenforce 0
 fi
 
-yum install -y kubelet-$KUBERNETES_VERSION kubeadm-$KUBERNETES_VERSION kubernetes-cni
+sudo yum install -y kubelet-$KUBERNETES_VERSION kubeadm-$KUBERNETES_VERSION kubernetes-cni
 
 # Fix kubelet configuration
 sed -i 's/--cgroup-driver=systemd/--cgroup-driver=cgroupfs/g' /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
